@@ -8,14 +8,21 @@ function TourViewer() {
   const viewerRef = useRef(null);
   const [nodes, setNodes] = useState(null);
 
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+
   useEffect(() => {
-    fetch(`http://localhost:5000/api/tour/${tourId}`)
+    fetch(`${API_BASE}/api/tour/${tourId}`)
       .then((res) => res.json())
-      .then((data) => setNodes(data));
-  }, [tourId]);
+      .then((data) => setNodes(data))
+      .catch((err) => {
+        console.error("Failed to load tour:", err);
+        alert("Failed to load tour. Please check your link or try again later.");
+      });
+  }, [tourId, API_BASE]);
 
   const handleReady = () => {
     const viewer = viewerRef.current?.viewer;
+    if (!viewer || !nodes) return;
     const vt = viewer.getPlugin(VirtualTourPlugin);
     vt.setNodes(nodes);
   };
